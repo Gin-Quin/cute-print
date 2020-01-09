@@ -1,0 +1,22 @@
+{
+  "name": "cute-print",
+  "version": "1.0.0",
+  "description": "Enjoyable and colored printing in the console with node",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+	 "build": "sucrase . -d . -t typescript,imports",
+	 "dev": "chokidar **/*.ts -c 'npm run build'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lepzulnag/cute-print.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Lepzulnag/cute-print/issues"
+  },
+  "homepage": "https://github.com/Lepzulnag/cute-print#readme"
+}
