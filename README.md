@@ -66,7 +66,7 @@ Remember that every library has its pros and cons - and everyone has its own pre
 - `cute-print` is written in Typescript and so can be used in any Typescript project with zero effort
 - `cute-print` has a cleaner syntax :
 
-> (The exemples are actually from my own code. I had a lot of logs to do and the syntax started to be painful so I decided to create this utilitary library.)
+> The exemples are actually from my own code. I had a lot of logs to do and the syntax started to be painful so I decided to create this utilitary library.
 
 ```js
 // chalk : 74 characters (~ +50%)
