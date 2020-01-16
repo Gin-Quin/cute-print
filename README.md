@@ -22,6 +22,10 @@ print `Hello [red.bgWhite: world]!`
 
 let who = 'world'
 print `Hello [green.bold:${who}]!`
+
+// the default style is 'bold'. Both are identical :
+print `Hello [:${who}]!`
+print `Hello [bold:${who}]!`
 ```
 
 You can nest colors - although it becomes easily complex : (you should consider using the next syntax)
@@ -57,13 +61,12 @@ print.error.red `Something wrong happened`
 Remember that every library has its pros and cons - and everyone has its own preferences.
 
 - `chalk` has support for *true colors*
-- `cute-print` is written in Typescript an can be used in any Typescript project with zero effort
+- `chalk` can be used to manipulate any strings where `cute-print` purpose is only to print in the console
 - `cute-print` has no dependencies
+- `cute-print` is written in Typescript and so can be used in any Typescript project with zero effort
+- `cute-print` has a cleaner syntax :
 
-
-### Syntax comparison
-
-The exemples are actually from my own code, just before I decided to create this library.
+> (The exemples are actually from my own code. I had a lot of logs to do and the syntax started to be painful so I decided to create this utilitary library.)
 
 ```js
 // chalk : 74 characters (~ +50%)

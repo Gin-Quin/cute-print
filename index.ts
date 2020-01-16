@@ -49,7 +49,7 @@ const colors = {
 	bgBrightWhite: "\x1b[107m",
 }
 const colorKeys = Object.keys(colors).join('|')
-const templateRegex = new RegExp(`\\[((?:${colorKeys})(?:\\..*?)?)(?::|\\] ?)`, 'gi')
+const templateRegex = new RegExp(`\\[((?:${colorKeys})?(?:\\..*?)?)(?::|\\] ?)`, 'gi')
 
 
 /** Return an ansi color from a list of color names separated by '.' **/
@@ -71,7 +71,7 @@ function addColors(str: string, scope:string) {
 	for (let match = templateRegex.exec(str); match; match = templateRegex.exec(str)) {
 		let [value, colorName] = match
 		let {index} = match
-		let color = getColor(scope, colorName)
+		let color = getColor(scope, colorName || 'bold')
 		let selfClosing = value[value.length-1] == ']' || value[value.length-2] == ']'
 
 		result += str.slice(lastIndex, index) + color
@@ -101,11 +101,12 @@ function indexOfClosingBracket(str:string, x:number=0) {
 	let c : string
 	let depth = 0
 
-	while (c = str[++x]) {
+	while (c = str[x]) {
 		if (c == '[')
 			depth++
 		else if (c == ']' && !depth--)
 			return x
+		x++
 	}
 
 	return x  // this library is permissive so we don't throw an error
@@ -196,5 +197,5 @@ const newPrinter = (context:any) => Object.defineProperties(printer.bind(context
 const print = newPrinter([console.log, ''])
 export default print
 
-// print.green.bgBlack `Coucou [yellow: mon [bold:brave] Hercule], comment ça va ?`
+// print.green.bgBlack `Coucou [yellow: mon [:brave] Hercule], comment ça va ?`
 // print.error.red.bgBlack `Coucou [yellow][red.underline] mon [bold] brave Hercule[reset], comment ça va ?`

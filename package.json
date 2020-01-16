@@ -1,6 +1,6 @@
 {
   "name": "cute-print",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Enjoyable and colored printing in the console with node",
   "main": "index.js",
   "scripts": {
