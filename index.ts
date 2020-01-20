@@ -196,6 +196,3 @@ const newPrinter = (context:any) => Object.defineProperties(printer.bind(context
 /** Export printers **/
 const print = newPrinter([console.log, ''])
 export default print
-
-// print.green.bgBlack `Coucou [yellow: mon [:brave] Hercule], comment ça va ?`
-// print.error.red.bgBlack `Coucou [yellow][red.underline] mon [bold] brave Hercule[reset], comment ça va ?`

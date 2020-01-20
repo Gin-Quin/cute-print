@@ -98,7 +98,7 @@ function addColors(str, scope) {
 
 /** Return the end of the next closing bracket. **/
 function indexOfClosingBracket(str, x=0) {
-	let c 
+	let c
 	let depth = 0
 
 	while (c = str[x]) {
@@ -121,7 +121,7 @@ function printer(value = '') {
 	if (typeof value != 'string') {
 		// @ts-ignore
 		let [raw, ...computed] = arguments
-		value = raw[0] 
+		value = raw[0]
 		for (let i=1; i < raw.length; i++)
 			value += computed[i-1] + raw[i]
 	}
@@ -195,7 +195,7 @@ const newPrinter = (context) => Object.defineProperties(printer.bind(context), {
 
 /** Export printers **/
 const print = newPrinter([console.log, ''])
-exports. default = print
+module.exports = print
 
 // print.green.bgBlack `Coucou [yellow: mon [:brave] Hercule], comment ça va ?`
 // print.error.red.bgBlack `Coucou [yellow][red.underline] mon [bold] brave Hercule[reset], comment ça va ?`
