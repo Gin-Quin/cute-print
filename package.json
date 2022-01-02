@@ -1,6 +1,6 @@
 {
   "name": "@digitak/print",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "Enjoyable and colored printing in the console with node",
   "main": "index.js",
   "scripts": {
