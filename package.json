@@ -1,12 +1,13 @@
 {
-  "name": "cute-print",
-  "version": "1.0.4",
+  "name": "@digitak/print",
+  "version": "1.1.1",
   "description": "Enjoyable and colored printing in the console with node",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-	 "build": "sucrase . -d . -t typescript,imports",
-	 "dev": "chokidar **/*.ts -c 'npm run build'"
+    "dev": "chokidar **/*.ts -c 'npm run build'",
+    "test": "tsc --noEmit",
+    "build": "tsc",
+    "deploy": "yarn build && yarn publish"
   },
   "repository": {
     "type": "git",
@@ -18,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/Lepzulnag/cute-print/issues"
   },
-  "homepage": "https://github.com/Lepzulnag/cute-print#readme"
+  "homepage": "https://github.com/Lepzulnag/cute-print#readme",
+  "devDependencies": {
+    "typescript": "^4.5.4"
+  }
 }
