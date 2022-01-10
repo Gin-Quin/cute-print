@@ -9,18 +9,16 @@ Also see [cute-dump](https://www.npmjs.com/package/cute-dump) if you need to pre
 ## Usage
 
 Import `print` :
-```js
-import print from 'cute-print'
-// or
-const print = require('cute-print')
+```ts
+import { print } from 'cute-print'
 ```
 
 Print a colored value :
-```js
+```ts
 print `Hello [red: world]!`
 print `Hello [red.bgWhite: world]!`
 
-let who = 'world'
+const who = 'world'
 print `Hello [green.bold:${who}]!`
 
 // the default style is 'bold'. Both are identical :
@@ -29,28 +27,28 @@ print `Hello [bold:${who}]!`
 ```
 
 You can nest colors - although it becomes easily complex : (you should consider using the next syntax)
-```js
+```ts
 print `Hello [red: world and [bold:universe]]!`
 ```
 
 You can use a tag without the `:` - that will affect the string up to the end.
-```js
+```ts
 print `Hello [red] world and [bold] universe!`
 ```
 
 You can use `[reset]` to reset the style :
-```js
+```ts
 print `Hello [red.bold] world and [reset] universe!`
 ```
 
 You can also use a default styling for the whole string :
-```js
+```ts
 print.red `Hello red world!`
 print.red.bgWhite `Hello red world on white background!`
 ```
 
 Printing on the `error` or `warning` streams :
-```js
+```ts
 print.warn `You are a cute dangerous guy`
 print.error `Something wrong happened`
 print.error.red `Something wrong happened`
@@ -68,14 +66,14 @@ Remember that every library has its pros and cons - and everyone has its own pre
 
 > The exemples are actually from my own code. I had a lot of logs to do and the syntax started to be painful so I decided to create this utilitary library.
 
-```js
+```ts
 // chalk : 74 characters (~ +50%)
 console.log(chalk.green('\n-' + chalk.bold(' The mole starts to sniff!')))
 // cute-print : 50 characters
 print.green `\n- [bold] The mole starts to sniff!`
 ```
 
-```js
+```ts
 // chalk : 58 characters (~ +25%)
 console.log(chalk.blueBright('Entities :'), total - empty)
 // cute-print : 46 characters

@@ -1,3 +1,56 @@
+type Print = (...value: Array<string | TemplateStringsArray>) => void
+type Context = [print: Print, scope: string]
+
+type Printer = Print & {
+	error: Printer
+	warn: Printer
+
+	bold: Printer
+	dim: Printer
+	italic: Printer
+	underline: Printer
+	blink: Printer
+	fastblink: Printer
+	reverse: Printer
+	hidden: Printer
+	default: Printer
+
+	black: Printer
+	red: Printer
+	green: Printer
+	yellow: Printer
+	blue: Printer
+	magenta: Printer
+	white: Printer
+	cyan: Printer
+
+	bgBlack: Printer
+	bgRed: Printer
+	bgGreen: Printer
+	bgYellow: Printer
+	bgBlue: Printer
+	bgMagenta: Printer
+	bgWhite: Printer
+	bgCyan: Printer
+
+	brightBlack: Printer
+	brightRed: Printer
+	brightGreen: Printer
+	brightYellow: Printer
+	brightBlue: Printer
+	brightMagenta: Printer
+	brightWhite: Printer
+	brightCyan: Printer
+
+	bgBrightBlack: Printer
+	bgBrightRed: Printer
+	bgBrightGreen: Printer
+	bgBrightYellow: Printer
+	bgBrightBlue: Printer
+	bgBrightMagenta: Printer
+	bgBrightWhite: Printer
+	bgBrightCyan: Printer
+}
 
 const colors = {
 	reset: "\x1b[0m",
@@ -48,37 +101,34 @@ const colors = {
 	bgBrightCyan: "\x1b[106m",
 	bgBrightWhite: "\x1b[107m",
 }
-const colorKeys = Object.keys(colors).join('|')
-const templateRegex = new RegExp(`\\[((?:${colorKeys})?(?:\\..*?)?)(?::|\\] ?)`, 'gi')
-
+const colorKeys = Object.keys(colors).join("|")
+const templateRegex = new RegExp(`\\[((?:${colorKeys})?(?:\\..*?)?)(?::|\\] ?)`, "gi")
 
 /** Return an ansi color from a list of color names separated by '.' **/
-function getColor(scope:string, colorName:string) {
-	let result = ''
-	for (let color of colorName.split('.'))
-		if (color)
-			result += color == 'reset' ? colors.reset + scope : colors[color]
+function getColor(scope: string, colorName: string) {
+	let result = ""
+	for (const color of colorName.split("."))
+		if (color) result += color == "reset" ? colors.reset + scope : (colors as any)[color]
 	return result
 }
 
 /** Transform the template strings to add color **/
-function addColors(str: string, scope:string) {
+function addColors(str: string, scope: string) {
 	const lastIndexBefore = templateRegex.lastIndex
 	templateRegex.lastIndex = 0
-	let result = ''
+	let result = ""
 	let lastIndex = 0
 
 	for (let match = templateRegex.exec(str); match; match = templateRegex.exec(str)) {
 		let [value, colorName] = match
-		let {index} = match
-		let color = getColor(scope, colorName || 'bold')
-		let selfClosing = value[value.length-1] == ']' || value[value.length-2] == ']'
+		let { index } = match
+		let color = getColor(scope, colorName || "bold")
+		let selfClosing = value[value.length - 1] == "]" || value[value.length - 2] == "]"
 
 		result += str.slice(lastIndex, index) + color
 		templateRegex.lastIndex = lastIndex = index + value.length
 
-		if (selfClosing)
-			continue
+		if (selfClosing) continue
 
 		// if not self-closing, we need to find the end of the closing bracket
 		let stop = indexOfClosingBracket(str, index + value.length)
@@ -95,35 +145,30 @@ function addColors(str: string, scope:string) {
 	return result
 }
 
-
 /** Return the end of the next closing bracket. **/
-function indexOfClosingBracket(str:string, x:number=0) {
-	let c : string
+function indexOfClosingBracket(str: string, x: number = 0) {
+	let c: string
 	let depth = 0
 
-	while (c = str[x]) {
-		if (c == '[')
-			depth++
-		else if (c == ']' && !depth--)
-			return x
+	while ((c = str[x])) {
+		if (c == "[") depth++
+		else if (c == "]" && !depth--) return x
 		x++
 	}
 
-	return x  // this library is permissive so we don't throw an error
+	return x // this library is permissive so we don't throw an error
 }
 
-
 /**  Main printing function **/
-function printer(value: string|TemplateStringsArray = '') {
+function printer(this: Context, value: string | TemplateStringsArray = "") {
 	const [print, scope] = this
 
 	// if we have a template string, we transform it into a simple string
-	if (typeof value != 'string') {
+	if (typeof value != "string") {
 		// @ts-ignore
 		let [raw, ...computed] = arguments
 		value = raw[0] as string
-		for (let i=1; i < raw.length; i++)
-			value += computed[i-1] + raw[i]
+		for (let i = 1; i < raw.length; i++) value += computed[i - 1] + raw[i]
 	}
 
 	// add the colors
@@ -133,66 +178,64 @@ function printer(value: string|TemplateStringsArray = '') {
 	return print(scope + value + colors.reset)
 }
 
-
-
 /** Call this everytime you need to create a new printer **/
-const get = (context:any, scope:string='') => ({
-	get() {
+const get = (context: Context, scope: string = "") => ({
+	get(): Printer {
 		return newPrinter([context[0], context[1] + scope])
-	}
+	},
 })
-const newPrinter = (context:any) => Object.defineProperties(printer.bind(context), {
-	error: get([console.error, context[1]]),
-	warn: get([console.error, context[1]]),
+const newPrinter = (context: Context) =>
+	Object.defineProperties(printer.bind(context), {
+		error: get([console.error, context[1]]),
+		warn: get([console.warn, context[1]]),
 
-	bold: get(context, colors.bold),
-	dim: get(context, colors.dim),
-	italic: get(context, colors.italic),
-	underline: get(context, colors.underline),
-	blink: get(context, colors.blink),
-	fastblink: get(context, colors.fastblink),
-	reverse: get(context, colors.reverse),
-	hidden: get(context, colors.hidden),
-	default: get(context, colors.default),
+		bold: get(context, colors.bold),
+		dim: get(context, colors.dim),
+		italic: get(context, colors.italic),
+		underline: get(context, colors.underline),
+		blink: get(context, colors.blink),
+		fastblink: get(context, colors.fastblink),
+		reverse: get(context, colors.reverse),
+		hidden: get(context, colors.hidden),
+		default: get(context, colors.default),
 
-	black: get(context, colors.black),
-	red: get(context, colors.red),
-	green: get(context, colors.green),
-	yellow: get(context, colors.yellow),
-	blue: get(context, colors.blue),
-	magenta: get(context, colors.magenta),
-	white: get(context, colors.white),
-	cyan: get(context, colors.cyan),
+		black: get(context, colors.black),
+		red: get(context, colors.red),
+		green: get(context, colors.green),
+		yellow: get(context, colors.yellow),
+		blue: get(context, colors.blue),
+		magenta: get(context, colors.magenta),
+		white: get(context, colors.white),
+		cyan: get(context, colors.cyan),
 
-	bgBlack: get(context, colors.bgBlack),
-	bgRed: get(context, colors.bgRed),
-	bgGreen: get(context, colors.bgGreen),
-	bgYellow: get(context, colors.bgYellow),
-	bgBlue: get(context, colors.bgBlue),
-	bgMagenta: get(context, colors.bgMagenta),
-	bgWhite: get(context, colors.bgWhite),
-	bgCyan: get(context, colors.bgCyan),
+		bgBlack: get(context, colors.bgBlack),
+		bgRed: get(context, colors.bgRed),
+		bgGreen: get(context, colors.bgGreen),
+		bgYellow: get(context, colors.bgYellow),
+		bgBlue: get(context, colors.bgBlue),
+		bgMagenta: get(context, colors.bgMagenta),
+		bgWhite: get(context, colors.bgWhite),
+		bgCyan: get(context, colors.bgCyan),
 
-	brightBlack: get(context, colors.black),
-	brightRed: get(context, colors.red),
-	brightGreen: get(context, colors.green),
-	brightYellow: get(context, colors.yellow),
-	brightBlue: get(context, colors.blue),
-	brightMagenta: get(context, colors.magenta),
-	brightWhite: get(context, colors.white),
-	brightCyan: get(context, colors.cyan),
+		brightBlack: get(context, colors.black),
+		brightRed: get(context, colors.red),
+		brightGreen: get(context, colors.green),
+		brightYellow: get(context, colors.yellow),
+		brightBlue: get(context, colors.blue),
+		brightMagenta: get(context, colors.magenta),
+		brightWhite: get(context, colors.white),
+		brightCyan: get(context, colors.cyan),
 
-	bgBrightBlack: get(context, colors.bgBrightBlack),
-	bgBrightRed: get(context, colors.bgBrightRed),
-	bgBrightGreen: get(context, colors.bgBrightGreen),
-	bgBrightYellow: get(context, colors.bgBrightYellow),
-	bgBrightBlue: get(context, colors.bgBrightBlue),
-	bgBrightMagenta: get(context, colors.bgBrightMagenta),
-	bgBrightWhite: get(context, colors.bgBrightWhite),
-	bgBrightCyan: get(context, colors.bgBrightCyan),
-})
-
+		bgBrightBlack: get(context, colors.bgBrightBlack),
+		bgBrightRed: get(context, colors.bgBrightRed),
+		bgBrightGreen: get(context, colors.bgBrightGreen),
+		bgBrightYellow: get(context, colors.bgBrightYellow),
+		bgBrightBlue: get(context, colors.bgBrightBlue),
+		bgBrightMagenta: get(context, colors.bgBrightMagenta),
+		bgBrightWhite: get(context, colors.bgBrightWhite),
+		bgBrightCyan: get(context, colors.bgBrightCyan),
+	}) as unknown as Printer
 
 /** Export printers **/
-const print = newPrinter([console.log, ''])
+export const print = newPrinter([console.log, ""])
 export default print
